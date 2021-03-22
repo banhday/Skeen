@@ -1,1 +1,1 @@
-Skeen's specification for NETYS 2021
+Skeen's specifications for NETYS 2021
