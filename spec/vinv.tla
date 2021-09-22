@@ -24,10 +24,12 @@ ValidOwnedLocalTS ==
 \* If process p is not an addressee of message id, it never sends a proposal for message id.
 \* If there exists a proposal for message id, message id must be multicast before.
 ValidInTransitProposeTS ==
-  /\ ( \A id \in McastID : \A rcver \in Proc \ GroupDest[id] : \A snder \in Proc : \A m \in inTransit[snder][rcver] : m.id # id )
-  /\ ( \A id \in McastID : \A snder \in Proc \ GroupDest[id] : \A rcver \in Proc : \A m \in inTransit[snder][rcver] : m.id # id )
-  /\ ( \A id \in McastID : \A rcver \in GroupDest[id] : \A snder \in Proc : \A m \in inTransit[snder][rcver] : 
-            m.id = id => id \in mcastedID)            
+  /\ ( \A id \in McastID : \A rcver \in Proc \ GroupDest[id] : \A snder \in Proc :  
+            \A m \in inTransit[snder][rcver] : m.id # id )
+  /\ ( \A id \in McastID : \A snder \in Proc \ GroupDest[id] : \A rcver \in Proc : 
+            \A m \in inTransit[snder][rcver] : m.id # id )
+  /\ ( \A id \in McastID : \A rcver \in GroupDest[id] : \A snder \in Proc :  
+            \A m \in inTransit[snder][rcver] : m.id = id => id \in mcastedID)            
   
 \* If process p is not an addressee of message id, it never receives any a proposal for message id.  
 \* If process p has received a proposal for message id, message id must be multicast before.
@@ -95,5 +97,5 @@ IndInv ==
 
 =============================================================================
 \* Modification History
-\* Last modified Thu Mar 25 22:26:37 CET 2021 by tran
+\* Last modified Mon Sep 20 16:51:56 CEST 2021 by tran
 \* Created Tue Mar 16 08:59:43 CET 2021 by tran

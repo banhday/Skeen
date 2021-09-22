@@ -67,9 +67,12 @@ Time == 1..MaxClock
 ProcWithNull == 0..N            
             
 \* The set of all possible in-transit messages            
-TimestampSet == [t : Time, g : Proc] \cup {TimestampNull} \* <: {[t |-> Int, g |-> Int]} ) \cup ({TimestampNull}  <: {[g : Int, t : Int]})     
-McastMsgSet   == [t : Time, id : McastID, type : {MType}, source : Proc] <: {[type |-> Int, t |-> Int, id |-> Int, source |-> Int]}  
-ProposeMsgSet == [t : Time, id : McastID, type : {PType}, source : Proc] <: {[type |-> Int, t |-> Int, id |-> Int, source |-> Int]}
+TimestampSet == [t : Time, g : Proc] \cup {TimestampNull} 
+                      \* <: {[t |-> Int, g |-> Int]}  \cup ({TimestampNull}  <: {[g : Int, t : Int]})     
+McastMsgSet   == ( [t : Time, id : McastID, type : {MType}, source : Proc] 
+                        <: {[type |-> Int, t |-> Int, id |-> Int, source |-> Int]} )  
+ProposeMsgSet == ( [t : Time, id : McastID, type : {PType}, source : Proc] 
+                        <: {[type |-> Int, t |-> Int, id |-> Int, source |-> Int]} )
 InTransitMsgSet == McastMsgSet \cup ProposeMsgSet
 
           
@@ -111,7 +114,8 @@ Multicast(mid) ==
       /\ snder \in GroupDest[mid]             
       /\ mcastedID' = mcastedID \cup {mid}    \* Marks that message mid is multicast
       /\ LET time == clock[snder] + 1
-             msg ==  ([ type |-> MType, id |-> mid, t |-> time, source |-> snder ] <: [type |-> Int, t |-> Int, source |-> Int, id |-> Int])
+             msg ==  ([ type |-> MType, id |-> mid, t |-> time, source |-> snder ] 
+                            <: [type |-> Int, t |-> Int, source |-> Int, id |-> Int])
          IN   /\ inTransit' = [p \in Proc |-> [q \in Proc |-> 
                                   IF p = snder /\ q \in GroupDest[mid]
                                   THEN inTransit[p][q] \cup {msg}
@@ -135,7 +139,8 @@ ReceiveMulticast(snder, rcver, msg) ==
   /\ LET mid == msg.id
          time == clock[rcver] + 1
          newTS == [ t |-> time, g |-> rcver ]       \* the local timestamp for message msg.id                             
-         newMsg == ([ type |-> PType, id |-> mid, source |-> rcver, t |-> time ] <: [type |-> Int, t |-> Int, source |-> Int, id |-> Int])    \* the proposal for message msg.id                       
+         newMsg == ( [ type |-> PType, id |-> mid, source |-> rcver, t |-> time ] 
+                          <: [type |-> Int, t |-> Int, source |-> Int, id |-> Int] )    \* the proposal for message msg.id                       
      IN /\ clock' = [clock EXCEPT ![rcver] = clock[rcver] + 1]        
         /\ localTS' = [localTS EXCEPT ![rcver][mid] = newTS]          
         /\ phase' = [phase EXCEPT ![rcver][mid] = Proposed]
@@ -163,11 +168,12 @@ Less(ts1, ts2) ==
 
 
 
-\* Check whether message id can be delivered to process p                                
+\* Check whether message id can be delivered to process p
+\* The local timestamps of all committed messages must be greater than the global timestamp of message id                                
 CanDeliver(p, id) ==
   /\ ~delivered[p][id] 
   /\ phase'[p][id] = Committed
-  /\ \A mid \in rcvdMcastID'[p] : \* The local timestamps of all committed messages must be greater than the global timestamp of message id  
+  /\ \A mid \in rcvdMcastID'[p] :   
         phase'[p][mid] = Proposed => Less(globalTS'[p][id], localTS'[p][mid]) 
                                                                        
 \* Process rcver has received the proposals from all addressees of message id. 
@@ -190,18 +196,22 @@ ReceivePropose(snder, rcver, msg) ==
   /\ LET ts == [ t |-> msg.t, g |-> msg.source]
          id == msg.id
      IN /\ UNCHANGED << localTS, mcastedID, rcvdMcastID  >>
-        /\ proposeTS' = [proposeTS EXCEPT ![rcver][id] = proposeTS[rcver][id] \cup {msg} ]              
-        /\ IF HasAllProposes(rcver, id)                                                   \* Check whether process rcver has received the proposals from all addressees of message id.            
-           THEN LET m == PickMsgWithMaxTS(rcver, id)                                      \* Pick a proposed message with the greatest local timestamp for message id           
+        /\ proposeTS' = [proposeTS EXCEPT ![rcver][id] = proposeTS[rcver][id] \cup {msg} ]
+           \* Whether process rcver has received the proposals from all addressees of message id.              
+        /\ IF HasAllProposes(rcver, id)                       
+           THEN LET m == PickMsgWithMaxTS(rcver, id)             
                     maxTS == [ g |-> m.source, t |-> m.t ]                             
-                IN /\ globalTS' = [globalTS EXCEPT ![rcver][id] = maxTS]                  \* Set the global timestamp for message msg.id
-                   /\ clock' = [clock EXCEPT ![rcver]  = Max(clock[rcver], maxTS.t)]      \* Synchronizes the local clocks             
+                IN    \* Set the global timestamp for message msg.id
+                   /\ globalTS' = [globalTS EXCEPT ![rcver][id] = maxTS]    
+                      \* Synchronizes the local clocks
+                   /\ clock' = [clock EXCEPT ![rcver]  = Max(clock[rcver], maxTS.t)]                   
                    /\ phase' = [phase EXCEPT ![rcver][id] = Committed]                
                    /\ delivered' = [ delivered EXCEPT ![rcver] = [mid \in McastID |-> 
                                         IF ~delivered[rcver][mid]
                                         THEN CanDeliver(rcver, mid)
                                         ELSE delivered[rcver][mid] ]]  
-                   /\ dCntr' = [ dCntr EXCEPT ![rcver] = [ mid \in McastID |->            \* Update the number of times that process p has delivered message mid
+                      \* Update how many times p has delivered message mid                                        
+                   /\ dCntr' = [ dCntr EXCEPT ![rcver] = [ mid \in McastID |->    
                                         IF ~delivered[rcver][mid] /\ CanDeliver(rcver, mid)
                                         THEN dCntr[rcver][mid] + 1
                                         ELSE dCntr[rcver][mid] ] ]                                                                
@@ -231,5 +241,5 @@ Spec ==
     
 =============================================================================
 \* Modification History
-\* Last modified Thu Mar 25 22:10:07 CET 2021 by tran
+\* Last modified Mon Sep 20 16:46:38 CEST 2021 by tran
 \* Created Tue Mar 16 08:59:43 CET 2021 by tran
