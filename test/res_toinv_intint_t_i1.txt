@@ -1,0 +1,85 @@
+# Tool home: /home/tran/TUW/apalache/v0.16.2/apalache
+# Package:   /home/tran/TUW/apalache/v0.16.2/apalache/mod-distribution/target/apalache-pkg-0.16.3-SNAPSHOT-full.jar
+# JVM args:  -Xmx4096m -DTLA-Library=/home/tran/TUW/apalache/v0.16.2/apalache/src/tla
+#
+# APALACHE version 0.16.3-SNAPSHOT build v0.16.2-28-g27d8e4c
+#
+# WARNING: This tool is in the experimental stage.
+#          Please report bugs at: [https://github.com/informalsystems/apalache/issues]
+# 
+# Usage statistics is OFF. We care about your privacy.
+# If you want to help our project, consider enabling statistics with config --enable-stats=true.
+
+Checker options: filename=toinv_intint_t_i1.tla, init=, next=, inv= I@11:57:36.674
+Tuning:                                                           I@11:57:36.933
+PASS #0: SanyParser                                               I@11:57:36.934
+Parsing file /home/tran/TUW/apalache/v0.16.2/apalache/skeen_others/toinv_intint_t_i1.tla
+Parsing file /home/tran/TUW/apalache/v0.16.2/apalache/skeen_others/skeen_intint_t.tla
+Parsing file /tmp/TLC.tla
+Parsing file /tmp/Integers.tla
+Parsing file /tmp/FiniteSets.tla
+Parsing file /tmp/Sequences.tla
+Parsing file /tmp/Naturals.tla
+PASS #1: TypeCheckerSnowcat                                       I@11:57:38.420
+ > Running Snowcat .::.                                           I@11:57:38.420
+ > Your types are great!                                          I@11:57:42.272
+ > All expressions are typed                                      I@11:57:42.272
+PASS #2: ConfigurationPass                                        I@11:57:42.586
+  > toinv_intint_t_i1.cfg: Loading TLC configuration              I@11:57:42.590
+  > Using the init predicate IndInv from the TLC config           I@11:57:42.663
+  > Using the next predicate Next from the TLC config             I@11:57:42.664
+  > toinv_intint_t_i1.cfg: found INVARIANTS: IndInv               I@11:57:42.664
+  > Set the initialization predicate to IndInv                    I@11:57:42.666
+  > Set the transition predicate to Next                          I@11:57:42.667
+  > Set an invariant to IndInv                                    I@11:57:42.667
+  > Replaced CONSTANT M with const_16158859394581540000()         I@11:57:42.670
+  > Replaced CONSTANT N with const_16158859394581541000()         I@11:57:42.671
+  > Replaced CONSTANT Mcaster with const_16158859394581542000()   I@11:57:42.671
+  > Replaced CONSTANT MaxClock with const_16158859394581543000()  I@11:57:42.671
+  > Replaced CONSTANT GroupDest with const_16158859394581544000() I@11:57:42.672
+PASS #3: DesugarerPass                                            I@11:57:42.875
+  > Desugaring...                                                 I@11:57:42.875
+PASS #4: UnrollPass                                               I@11:57:43.049
+  > Unroller                                                      I@11:57:43.107
+PASS #5: InlinePass                                               I@11:57:43.280
+  > InlinerOfUserOper                                             I@11:57:43.285
+  > Wrap                                                          I@11:57:43.366
+  > CallByNameOperatorEmbedder                                    I@11:57:43.379
+  > LetInExpander                                                 I@11:57:43.389
+  > Unwrap                                                        I@11:57:43.406
+  > InlinerOfUserOper                                             I@11:57:43.415
+Leaving only relevant operators: CInitPrimed, IndInv, IndInvPrimed, Next I@11:57:43.435
+PASS #6: PrimingPass                                              I@11:57:43.557
+  > Introducing IndInvPrimed for IndInv'                          I@11:57:43.560
+PASS #7: VCGen                                                    I@11:57:43.762
+  > Producing verification conditions from the invariant IndInv   I@11:57:43.763
+  > VCGen produced 63 verification condition(s)                   I@11:57:43.780
+PASS #8: PreprocessingPass                                        I@11:57:43.992
+  > Before preprocessing: unique renaming                         I@11:57:43.992
+ > Applying standard transformations:                             I@11:57:43.998
+  > PrimePropagation                                              I@11:57:43.998
+  > Desugarer                                                     I@11:57:44.236
+  > UniqueRenamer                                                 I@11:57:44.475
+  > Normalizer                                                    I@11:57:44.758
+  > Keramelizer                                                   I@11:57:44.999
+  > After preprocessing: UniqueRenamer                            I@11:57:45.224
+PASS #9: TransitionFinderPass                                     I@11:57:45.495
+  > Found 1 initializing transitions                              I@11:57:45.541
+  > Found 6 transitions                                           I@11:57:45.581
+  > No constant initializer                                       I@11:57:45.581
+  > Applying unique renaming                                      I@11:57:45.583
+PASS #10: OptimizationPass                                        I@11:57:45.888
+ > Applying optimizations:                                        I@11:57:45.895
+  > ConstSimplifier                                               I@11:57:45.896
+  > ExprOptimizer                                                 I@11:57:45.967
+  > ConstSimplifier                                               I@11:57:46.005
+PASS #11: AnalysisPass                                            I@11:57:46.284
+ > Marking skolemizable existentials and sets to be expanded...   I@11:57:46.286
+  > Skolemization                                                 I@11:57:46.287
+  > Expansion                                                     I@11:57:46.291
+  > Remove unused let-in defs                                     I@11:57:46.326
+ > Running analyzers...                                           I@11:57:46.348
+  > Introduced expression grades                                  I@11:57:46.589
+  > Introduced 21 formula hints                                   I@11:57:46.590
+PASS #12: PostTypeCheckerSnowcat                                  I@11:57:46.590
+ > Running Snowcat .::.                                           I@11:57:46.590
